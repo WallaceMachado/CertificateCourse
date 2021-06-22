@@ -43,7 +43,7 @@ export const handle = async (event) => {
   })
     .promise();
 
-  const medalPath = path.join(process.cwd(), "src", "templates", "selo.png");
+  const medalPath = path.join(process.cwd(), "src", "template", "selo.png");
 
   const medal = fs.readFileSync(medalPath, "base64");
 
@@ -62,7 +62,25 @@ export const handle = async (event) => {
 
   //transformar em PDF
 
-  
+  const browser = await chromium.puppeteer.launch({
+    headless: true,
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath
+  });
+
+  const page = await browser.newPage();
+
+  const pdf = await page.pdf({
+    format: "a4",
+    landscape: true,
+    path: process.env.IS_OFFLINE ? "certificate.pdf" : null,
+    printBackground: true,
+    preferCSSPageSize: true,
+  });
+
+  await browser.close();
+
 
   // salvar no s3
 
