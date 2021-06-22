@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import handlebars from "handlebars";
 import dayjs from "dayjs";
+import { S3} from "aws-sdk";
 import { document } from "../utils/dynamodbClient";
 
 interface ICreateCertificate {
@@ -40,8 +41,7 @@ export const handle = async (event) => {
       name,
       grade,
     }
-  })
-    .promise();
+  }).promise();
 
   const medalPath = path.join(process.cwd(), "src", "template", "selo.png");
 
@@ -70,6 +70,8 @@ export const handle = async (event) => {
   });
 
   const page = await browser.newPage();
+
+  await page.setContent(content);
 
   const pdf = await page.pdf({
     format: "a4",
